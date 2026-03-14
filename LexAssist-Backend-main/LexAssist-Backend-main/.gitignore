@@ -1,0 +1,103 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Logs and databases
+*.log
+.log
+logs/
+.pytest_cache/
+.coverage
+coverage.xml
+*.sqlite3
+*.db
+
+# Editor directories and files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints
+
+# Secrets and environment files
+.env
+.env.*
+*.env
+local_settings.py
+settings_local.py
+instance/
+secrets.json
+secrets.yml
+credentials.json
+
+# Private keys / certificates
+*.pem
+*.key
+*.crt
+*.p12
+*.jks
+*.keystore
+
+# SSH / cloud credentials
+.ssh/
+.aws/
+aws-credentials
+gcloud/
+
+# Firebase / Google service account files (service account JSONs, mobile config)
+serviceAccountKey*.json
+firebase-adminsdk*.json
+firebase-service-account*.json
+firebase-credentials.json
+firebase-credentials-*.json
+GoogleService-Info.plist
+google-services.json
+firebase-debug.log
+
+# Firebase emulator / local config overrides
+.firebaserc.local
+firebase.local.json
+
+# MongoDB credentials / dumps
+mongo-credentials.json
+mongodb-credentials.json
+mongo-*.json
+*.mongo.json
+.mongodb/
+dump/
+mongodump/
+
+# Common secrets that may contain DB connection strings
+*.secret
+secret.*
+credentials.yml
+
+# Node
+node_modules/
+
+# Build artifacts
+*.egg
+_build/
+
+# If your project uses a config folder that contains secrets, add examples here:
+# core/config_local.py
+# config/*.secret
