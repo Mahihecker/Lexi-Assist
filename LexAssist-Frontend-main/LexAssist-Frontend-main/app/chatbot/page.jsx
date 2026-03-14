@@ -218,11 +218,15 @@ export default function ChatbotPage() {
             setConversations(sorted);
             
         } catch (error) {
-            console.error("Failed to send message:", error);
+            const status = error.response?.status;
+            const rawDetail = error.response?.data?.detail ?? error.response?.data?.message ?? error.message;
+            console.error("Failed to send message:", status, rawDetail, error.response?.data);
+            const detailStr = Array.isArray(rawDetail) ? rawDetail.map(d => d?.msg ?? d).join(" ") : (typeof rawDetail === "string" ? rawDetail : "");
+            const userMessage = detailStr && detailStr.length < 300 ? detailStr : "Sorry, an error occurred.";
             setMessages(prev => [...prev.filter(m => m._id !== tempUserMessage._id), { 
                 _id: `err-${Date.now()}`, 
                 role: 'assistant', 
-                content: 'Sorry, an error occurred.' 
+                content: userMessage 
             }]);
         } finally {
             setIsSending(false);

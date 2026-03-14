@@ -1,8 +1,11 @@
 # backend/core/llm.py
+import logging
 import httpx
 from typing import List
 
 from core.config import settings
+
+logger = logging.getLogger(__name__)
 
 OLLAMA_API_URL = "http://localhost:11434/api/chat"
 OLLAMA_MODEL = "llama3.2"
@@ -42,11 +45,19 @@ async def _call_groq(messages: List[dict]) -> str:
             response.raise_for_status()
             data = response.json()
             return (data.get("choices", [{}])[0].get("message", {}).get("content") or "").strip()
+    except httpx.HTTPStatusError as e:
+        body = e.response.text if e.response else ""
+        logger.error("Groq API error status=%s body=%s", e.response.status_code if e.response else None, body)
+        if e.response and e.response.status_code == 401:
+            return "AI service error: invalid or missing API key. On Render, add GROQ_API_KEY in Environment (get a key at console.groq.com)."
+        if e.response and e.response.status_code == 429:
+            return "AI service is rate-limited. Please try again in a moment."
+        return "The AI service returned an error. Check Render logs for details."
     except httpx.RequestError as e:
-        print(f"Error calling Groq: {e}")
+        logger.exception("Groq request failed: %s", e)
         return "Sorry, I am currently unable to connect to the AI service."
     except Exception as e:
-        print(f"Unexpected error (Groq): {e}")
+        logger.exception("Unexpected error calling Groq: %s", e)
         return "An unexpected error occurred while generating a response."
 
 

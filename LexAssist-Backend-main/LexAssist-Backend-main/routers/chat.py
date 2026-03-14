@@ -1,4 +1,5 @@
 # backend/routers/chat.py
+import logging
 from fastapi import APIRouter, Depends, HTTPException, status, Body, Response
 from typing import List
 import uuid
@@ -9,6 +10,8 @@ from core.security import get_current_user
 from models.chat import ChatConversation, ChatMessage
 from core.database import conversation_collection
 from core.llm import get_ollama_response
+
+logger = logging.getLogger(__name__)
 
 
 router = APIRouter(
@@ -213,15 +216,17 @@ async def add_message_to_conversation(
     if not conversation:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Conversation not found")
 
-    history_for_llm = [
-        {"role": msg["role"], "content": msg["content"]} for msg in conversation.get("messages", [])
-    ]
+    # Build history safely (messages may lack role/content in edge cases)
+    history_for_llm = []
+    for msg in conversation.get("messages", []):
+        if isinstance(msg, dict) and msg.get("role") and msg.get("content") is not None:
+            history_for_llm.append({"role": msg["role"], "content": msg["content"]})
     history_for_llm.append({"role": "user", "content": message_content})
 
     bot_response_content = await get_ollama_response(history_for_llm)
 
     user_message = ChatMessage(role="user", content=message_content)
-    bot_message = ChatMessage(role="assistant", content=bot_response_content)
+    bot_message = ChatMessage(role="assistant", content=bot_response_content or "")
 
     await conversation_collection.update_one(
         {"_id": conversation_id},
