@@ -33,12 +33,17 @@ origins = ["http://localhost:3000"]
 if settings.CORS_ORIGINS_EXTRA:
     origins += [o.strip() for o in settings.CORS_ORIGINS_EXTRA.split(",") if o.strip()]
 
+# Allow all Vercel deployment URLs (*.vercel.app) for preview/production
+allow_origin_regex = r"https://.*\.vercel\.app"
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,       # Specifies which origins are allowed
-    allow_credentials=True,      # Allows cookies and auth headers
-    allow_methods=["*"],         # Allows all HTTP methods (GET, POST, etc.)
-    allow_headers=["*"],         # Allows all headers
+    allow_origins=origins,
+    allow_origin_regex=allow_origin_regex,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"],
 )   
 
 app.include_router(chat.router)
